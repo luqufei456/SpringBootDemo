@@ -7,19 +7,19 @@ public class User implements Serializable {
 
     private Long id;
     private String username;
-    private String passowrd;
+    private String password;
 
     public User(){}
 
-    public User(String username, String passowrd) {
+    public User(String username, String password) {
         this.username = username;
-        this.passowrd = passowrd;
+        this.password = password;
     }
 
-    public User(Long id, String username, String passowrd) {
+    public User(Long id, String username, String password) {
         this.id = id;
         this.username = username;
-        this.passowrd = passowrd;
+        this.password = password;
     }
 
     public Long getId() {
@@ -38,12 +38,12 @@ public class User implements Serializable {
         this.username = username;
     }
 
-    public String getPassowrd() {
-        return passowrd;
+    public String getPassword() {
+        return password;
     }
 
-    public void setPassowrd(String passowrd) {
-        this.passowrd = passowrd;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     @Override
@@ -51,7 +51,7 @@ public class User implements Serializable {
         return "User{" +
                 "id=" + id +
                 ", username='" + username + '\'' +
-                ", passowrd='" + passowrd + '\'' +
+                ", password='" + password + '\'' +
                 '}';
     }
 }

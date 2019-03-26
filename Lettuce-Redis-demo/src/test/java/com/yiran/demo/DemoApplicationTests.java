@@ -70,7 +70,7 @@ public class DemoApplicationTests {
     }
 
     @Test
-    public void test01() {
+    public void test01() throws InterruptedException {
         ExecutorService executorService = Executors.newFixedThreadPool(5);
         IntStream.range(0, 5).forEach( i ->
                 executorService.execute(() -> {
@@ -79,6 +79,16 @@ public class DemoApplicationTests {
                     }
                 })
         );
+        // 这里是为了保证线程能够执行完，不被junit的System.exit()强行关闭，否则线程池会拒绝任务
+        executorService.shutdown();
+        while (true) {
+            // 调用shutdown()方法后，且已提交的任务完成后，才会返回true
+            if (executorService.isTerminated()) {
+                System.out.println("线程池执行完毕");
+                break;
+            }
+            Thread.sleep(1000);
+        }
     }
 
     @Test
