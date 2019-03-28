@@ -1,6 +1,7 @@
 package com.yiran.demo;
 
 import com.yiran.demo.entity.User;
+import com.yiran.demo.service.UserService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -107,6 +108,18 @@ public class DemoApplicationTests {
                 }
         }).start();
         System.out.println("结束");
+    }
+
+    @Autowired
+    private UserService userService;
+
+    @Test
+    public void cacheGet() {
+        final User user = userService.saveOrUpdate(new User(5L, "555", "555"));
+        log.info("[saveOrUpdate] - [{}]", user);
+        final User user1 = userService.get(5L);
+        log.info("[get] - [{}]", user1);
+        userService.delete(5L);
     }
 
 }
