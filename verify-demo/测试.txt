@@ -1,0 +1,4 @@
+[ 测试 ] —— By 主键为 3 处产生对比异常 [ User{id=3, username='u1', password='p1'} ] != [ User{id=3, username='u1', password='p1'} ]
+[ 测试 ] —— By 主键为 5 处产生对比异常 [ User{id=5, username='u1', password='p3'} ] != [ User{id=5, username='u1', password='p3'} ]
+[ 测试 ] —— By 主键为 6 处产生对比异常 [ User{id=6, username='u1', password='p1'} ] != [ User{id=6, username='u1', password='p1'} ]
+[ 测试 ] —— By 主键为 8 处产生对比异常 [ User{id=8, username='u1', password='p3'} ] != [ User{id=8, username='u1', password='p3'} ]
