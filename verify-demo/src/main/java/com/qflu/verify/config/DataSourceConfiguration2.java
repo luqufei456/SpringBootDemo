@@ -15,6 +15,9 @@ import com.alibaba.druid.pool.DruidDataSource;
 
 @Configuration
 public class DataSourceConfiguration2 {
+
+    // 命名要与主数据源区分
+    // ConfigurationProperties 表名在application.properties中如何书写
     @Bean(name = "dataSource2")
     @ConfigurationProperties(prefix = "spring.datasource.slave")
     public DataSource dataSource() {
