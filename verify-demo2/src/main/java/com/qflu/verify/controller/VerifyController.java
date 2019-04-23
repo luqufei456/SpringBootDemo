@@ -1,5 +1,6 @@
 package com.qflu.verify.controller;
 
+import com.qflu.verify.annotation.LocalLock;
 import com.qflu.verify.service.VerifyDBService;
 import com.qflu.verify.utils.VerifyUtil;
 import org.slf4j.Logger;
@@ -51,6 +52,8 @@ public class VerifyController {
         return "byId";
     }
 
+    // 意味着会将 arg[0] 替换成第一个参数的值，生成后的新 key 将被缓存起来；
+    @LocalLock(key = "verify:arg[0]")
     @ResponseBody
     @PostMapping("/crtDt")
     public String verifyByCrtDt(@NotEmpty String tableName, String startDate, @Min(1) Integer interval) {
@@ -68,6 +71,8 @@ public class VerifyController {
         return "success";
     }
 
+    // 意味着会将 arg[0] 替换成第一个参数的值，生成后的新 key 将被缓存起来；
+    @LocalLock(key = "verify:arg[0]")
     @ResponseBody
     @PostMapping("/id")
     public String verifyById(@NotEmpty String tableName, @Min(1000) @Max(10000) Integer pageSize) {
