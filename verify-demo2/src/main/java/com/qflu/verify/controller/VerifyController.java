@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Past;
@@ -30,8 +31,8 @@ public class VerifyController {
         this.verifyDBService = verifyDBService;
     }
 
-    @GetMapping
-    public String verify(@NotEmpty String tableName, String startDate, @Min(1) Integer interval) {
+    @GetMapping("/crtDt")
+    public String verifyByCrtDt(@NotEmpty String tableName, String startDate, @Min(1) Integer interval) {
         startDate = startDate + " 00:00:00";
         try {
             Date start = VerifyUtil.sdf.parse(startDate);
@@ -43,6 +44,13 @@ public class VerifyController {
         }
         log.info("[表名] - [{}] ， [起始时间] - [{}] ， [间隔时间] - [{}]", tableName, startDate, interval);
         verifyDBService.queryByCrtDt(tableName, startDate, interval);
+        return "success";
+    }
+
+    @GetMapping("/id")
+    public String verifyById(@NotEmpty String tableName, @Min(1000) @Max(10000) Integer pageSize) {
+        log.info("[表名] - [{}] ， [每次查询数量] - [{}]", tableName, pageSize);
+        verifyDBService.queryById(tableName, pageSize);
         return "success";
     }
 }

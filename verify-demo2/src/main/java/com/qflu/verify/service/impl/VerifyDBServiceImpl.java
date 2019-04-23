@@ -28,6 +28,11 @@ public class VerifyDBServiceImpl implements VerifyDBService {
 
     @Override
     public void queryByCrtDt(String tableName, String startDate, Integer interval) {
+        // 如果表名过长，则直接停止查询，防止sql注入，这是因为表名是字符串拼接的，而不是占位符
+        // 表名也不可以用占位符
+        if (tableName.length() > 50){
+            return;
+        }
         Date newDate = new Date();
         try {
             Date start = VerifyUtil.sdf.parse(startDate);
@@ -55,6 +60,30 @@ public class VerifyDBServiceImpl implements VerifyDBService {
             }
         } catch (IOException | ParseException e ){
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void queryById(String tableName, int pageSize) {
+        // 如果表名过长，则直接停止查询，防止sql注入，这是因为表名是字符串拼接的，而不是占位符
+        // 表名也不可以用占位符
+        if (tableName.length() > 50){
+            return;
+        }
+        // 初始值为1，代表第一次查询
+        int page = 1;
+        while (true){
+            List<Map<String, Object>> masterList = masterDBDao.queryById(tableName, page, pageSize);
+            List<Map<String, Object>> slaveList = slaveDBDao.queryById(tableName, page, pageSize);
+            if (masterList.size() == 0 || slaveList.size() == 0) {
+                return;
+            }
+            try {
+                VerifyUtil.verifyResult(masterList, slaveList, tableName);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            page++;
         }
     }
 }

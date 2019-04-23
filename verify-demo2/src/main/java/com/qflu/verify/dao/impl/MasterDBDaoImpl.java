@@ -25,14 +25,15 @@ public class MasterDBDaoImpl implements MasterDBDao {
     // 注意oracle中to_date的格式为yyyy-MM-dd hh24:mi:ss，不能为yyyy-MM-dd HH:mm:ss
     @Override
     public List<Map<String, Object>> queryByCrtDt(String tableName, String startDate, String endDate) {
-        // 如果检测到表名长度超过了实际表名长度，则有可能是sql注入，直接返回一个空的结果集
-        if (tableName.length() > 50) {
-            List<Map<String, Object>> errorList = new ArrayList<>();
-            errorList.add(new HashMap<String, Object>());
-            return errorList;
-        }
         String sql = "SELECT * FROM " + tableName
                 + " WHERE CRT_DT > to_date(?, 'yyyy-MM-dd hh24:mi:ss') AND CRT_DT < to_date(?, 'yyyy-MM-dd hh24:mi:ss') ORDER BY CRT_DT ASC";
         return masterJdbcTemplate.queryForList(sql, startDate, endDate);
+    }
+
+    @Override
+    public List<Map<String, Object>> queryById(String tableName, int page, int pageSize) {
+        String sql = "SELECT * FROM ( SELECT a.*, ROWNUM ROWNO FROM ( SELECT * FROM " + tableName
+                + " ORDER BY ID ASC ) a WHERE ROWNUM < ? ) b WHERE b.ROWNO > ? ";
+        return masterJdbcTemplate.queryForList(sql, page*pageSize+1, (page-1)*pageSize);
     }
 }
