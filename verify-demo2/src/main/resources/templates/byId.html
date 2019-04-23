@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <!-- 可以看到 thymeleaf 是通过在标签里添加额外属性来绑定动态数据的 -->
+    <title>根据主键ID校验</title>
+    <!-- 在/resources/static/js目录下创建一个hello.js 用如下语法依赖即可-->
+
+</head>
+<body>
+    <form action="/verify/id" method="post">
+        <div>
+            <label for="name">表名:</label> <br>
+            <input type="text" id="name" name="tableName" />
+        </div>
+        <div>
+            <label for="pageSize">每次查询条数:最大1W条，最小1000条</label> <br>
+            <input type="text" id="pageSize" name="pageSize" />
+        </div>
+        <div class="button">
+            <button type="submit">提交</button>
+        </div>
+    </form>
+</body>
+</html>

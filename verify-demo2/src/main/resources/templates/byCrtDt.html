@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <!-- 可以看到 thymeleaf 是通过在标签里添加额外属性来绑定动态数据的 -->
+    <title>根据CRT_DT校验</title>
+    <!-- 在/resources/static/js目录下创建一个hello.js 用如下语法依赖即可-->
+</head>
+<body>
+    <form action="/verify/crtDt" method="post">
+        <div>
+            <label for="name">表名:</label> <br>
+            <input type="text" id="name" name="tableName" />
+        </div>
+        <div>
+            <label for="startDate">起始时间:格式为 2019-4-23 的字符串</label> <br>
+            <input type="text" id="startDate" name="startDate" />
+        </div>
+        <div>
+            <label for="interval">查询时间间隔:单位/天</label> <br>
+            <input type="text" id="interval" name="interval">
+        </div>
+        <div class="button">
+            <button type="submit">提交</button>
+        </div>
+    </form>
+</body>
+</html>

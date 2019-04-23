@@ -5,11 +5,11 @@ import com.qflu.verify.utils.VerifyUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
@@ -18,7 +18,7 @@ import java.text.ParseException;
 import java.util.Date;
 
 @Validated // 参数校验
-@RestController
+@Controller
 @RequestMapping("/verify")
 public class VerifyController {
 
@@ -31,7 +31,28 @@ public class VerifyController {
         this.verifyDBService = verifyDBService;
     }
 
-    @GetMapping("/crtDt")
+    @GetMapping("/index")
+    public String index(HttpServletRequest request){
+        // TODO 与上面的写法不同，但是结果一致。
+        // 设置属性
+        // request.setAttribute("title", "thymeleaf WEB页面");
+        // request.setAttribute("desc", "欢迎进入依然的demo~");
+        // 返回的 index 默认映射到 src/main/resources/templates/xx.html
+        return "index";
+    }
+
+    @GetMapping("/byCrtDt")
+    public String byCrtDt(HttpServletRequest request){
+        return "byCrtDt";
+    }
+
+    @GetMapping("/byId")
+    public String byId(HttpServletRequest request){
+        return "byId";
+    }
+
+    @ResponseBody
+    @PostMapping("/crtDt")
     public String verifyByCrtDt(@NotEmpty String tableName, String startDate, @Min(1) Integer interval) {
         startDate = startDate + " 00:00:00";
         try {
@@ -47,7 +68,8 @@ public class VerifyController {
         return "success";
     }
 
-    @GetMapping("/id")
+    @ResponseBody
+    @PostMapping("/id")
     public String verifyById(@NotEmpty String tableName, @Min(1000) @Max(10000) Integer pageSize) {
         log.info("[表名] - [{}] ， [每次查询数量] - [{}]", tableName, pageSize);
         verifyDBService.queryById(tableName, pageSize);

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <!-- 可以看到 thymeleaf 是通过在标签里添加额外属性来绑定动态数据的 -->
+    <title>数据库校验主页</title>
+    <!-- 在/resources/static/js目录下创建一个hello.js 用如下语法依赖即可-->
+    <!--<script type="text/javascript" th:src="@{/js/hello.js}"></script>-->
+</head>
+<body>
+    <a href="/verify/byCrtDt">根据CRT_DT来进行校验</a>
+    <br>
+    <br>
+    <a href="/verify/byId">根据ID来进行校验</a>
+</body>
+</html>
