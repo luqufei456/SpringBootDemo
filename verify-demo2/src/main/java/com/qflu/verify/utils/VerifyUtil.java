@@ -2,11 +2,13 @@ package com.qflu.verify.utils;
 
 import com.google.gson.Gson;
 import org.springframework.util.ResourceUtils;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,25 +31,55 @@ public class VerifyUtil {
         // 表示追加，而不是覆盖
         BufferedWriter out = new BufferedWriter(new FileWriter(errorLog, true));
 
-        // 如果master比较大，返回master的大小，否则返回slave的。
-        int size = master.size()>slave.size()?master.size():slave.size();
+        if (master.size() == 0) {
+            out.write("[ "+tableName+" INFO ] —— 原数据库无结果集，跳过此时间段对比");
+            return;
+        }
 
-        // 代表每次循环转为的json字符串
-        String thisMaster = "";
-        String thisSlave = "";
+        // 将list数据封装，便于查找
+        Map<String, Map<String, Object>> masterEntitys = new HashMap<>();
+        Map<String, Map<String, Object>> slaveEntitys = new HashMap<>();
 
-        for (int i = 0; i < size; i++) {
-            // 从master、slave中遍历得到所有的map，直接转为json字符串然后equals进行比较，如果不对则记录下来
-            thisMaster = gson.toJson(master.get(i));
-            thisSlave = gson.toJson(slave.get(i));
-            if (thisMaster.equals(thisSlave)) {
+        // 将List的数据封装到Map，方便后面对比时查找
+        for (int m = 0; m < master.size(); m++) {
+            // 获取 list 中的 map，每个map 相当于一个entity，它们都有主键ID，然后我将主键ID作为key，map作为value，存入 Entitys 方便查找
+            masterEntitys.put(master.get(m).get("ID").toString(), master.get(m));
+        }
+
+        for (int s = 0; s < slave.size(); s++) {
+            slaveEntitys.put(slave.get(s).get("ID").toString(), slave.get(s));
+        }
+
+        // 只要原数据库的数据迁移到新数据库即可，所以这里只要获得原数据库的keySet
+        for (String masterId : masterEntitys.keySet()) {
+            // 如果salve(新数据库)没有原数据库的这条记录，直接记录下来，然后跳过这次循环
+            if (slaveEntitys.get(masterId) == null) {
+                out.write("[ "+tableName+" ERROR ] —— 数据库迁移信息出现异常，异常处 Master(原数据库) 为： "
+                        + gson.toJson(masterEntitys.get(masterId))
+                        + " —— 异常信息为： slave(新数据库) 没有该条数据" + System.lineSeparator());
                 continue;
             }
-            else {
-                out.write("[ "+tableName+" ERROR ] —— 数据库迁移信息出现异常，异常处 Master 为： " + thisMaster
-                        + " —— 异常处 Salve 为： " + thisSlave + System.lineSeparator());
+            Map<String, Object> thisMasterEntity =  masterEntitys.get(masterId);
+            Map<String, Object> thisSlaveEntity = slaveEntitys.get(masterId);
+            for (String masterKey : thisMasterEntity.keySet()) {
+                // 这里有可能数据库中某个字段值为null，当发生这种情况时，就跳过当次循环
+                if (thisMasterEntity.get(masterKey) == null) {
+                    continue;
+                }
+                // 这时获取的是 新旧数据库 都拥有对应id的数据，然后对比其中每个字段是否相同，相同跳过，不相同记录
+                if (thisMasterEntity.get(masterKey).toString().equals(thisSlaveEntity.get(masterKey).toString())) {
+                    continue;
+                }
+                else {
+                    out.write("[ "+tableName+" ERROR ] —— 数据库迁移信息出现异常，异常处 Master 为： "
+                            + gson.toJson(thisMasterEntity)
+                            + " —— 异常信息为： 字段内容不匹配"
+                            + " —— 异常处 Salve 为： " + gson.toJson(thisSlaveEntity) + System.lineSeparator());
+                }
             }
+
         }
+
         out.flush();
         out.close();
     }

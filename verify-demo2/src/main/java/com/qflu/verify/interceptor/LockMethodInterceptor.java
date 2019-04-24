@@ -16,8 +16,8 @@ import java.util.concurrent.TimeUnit;
 /**
  * 本章先基于 本地缓存来做，后续讲解 redis 方案
  */
-@Aspect // 开启aop
-@Configuration // 通过java代码注册bean
+//@Aspect // 开启aop
+//@Configuration // 通过java代码注册bean
 public class LockMethodInterceptor {
 
     private static final Cache<String, Object> CACHES = CacheBuilder.newBuilder()

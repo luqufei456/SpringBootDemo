@@ -26,14 +26,14 @@ public class MasterDBDaoImpl implements MasterDBDao {
     @Override
     public List<Map<String, Object>> queryByCrtDt(String tableName, String startDate, String endDate) {
         String sql = "SELECT * FROM " + tableName
-                + " WHERE CRT_DT > to_date(?, 'yyyy-MM-dd hh24:mi:ss') AND CRT_DT < to_date(?, 'yyyy-MM-dd hh24:mi:ss') ORDER BY CRT_DT ASC";
+                + " WHERE CRT_DATE > to_date( ? , 'yyyy-MM-dd hh24:mi:ss') " +
+                "AND CRT_DATE < to_date( ? , 'yyyy-MM-dd hh24:mi:ss') ";
         return masterJdbcTemplate.queryForList(sql, startDate, endDate);
     }
 
     @Override
     public List<Map<String, Object>> queryById(String tableName, int page, int pageSize) {
-        String sql = "SELECT * FROM ( SELECT a.*, ROWNUM ROWNO FROM ( SELECT * FROM " + tableName
-                + " ORDER BY ID ASC ) a WHERE ROWNUM < ? ) b WHERE b.ROWNO > ? ";
+        String sql = "SELECT a.* FROM ( SELECT t.*, ROWNUM ROWNO FROM " + tableName + " t WHERE ROWNUM < ? ) a WHERE a.ROWNO > ? ";
         return masterJdbcTemplate.queryForList(sql, page*pageSize+1, (page-1)*pageSize);
     }
 }
