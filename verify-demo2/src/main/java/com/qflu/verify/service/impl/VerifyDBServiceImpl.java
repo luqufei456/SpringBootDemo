@@ -4,6 +4,9 @@ import com.qflu.verify.dao.MasterDBDao;
 import com.qflu.verify.dao.SlaveDBDao;
 import com.qflu.verify.service.VerifyDBService;
 import com.qflu.verify.utils.VerifyUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,9 +31,14 @@ public class VerifyDBServiceImpl implements VerifyDBService {
 
     @Override
     public void queryByCrtDt(String tableName, String startDate, Integer interval) {
+        // slf4j，设置变量，在xml中使用这些定义日志的名称，可以选择将日志输出到哪。适用于多线程
+        MDC.put("logName",tableName);
+        Logger log = LoggerFactory.getLogger(tableName);
+
         // 如果表名过长，则直接停止查询，防止sql注入，这是因为表名是字符串拼接的，而不是占位符
         // 表名也不可以用占位符
         if (tableName.length() > 50){
+            log.error("表名过长");
             return;
         }
         Date newDate = new Date();
@@ -48,7 +56,7 @@ public class VerifyDBServiceImpl implements VerifyDBService {
                 List<Map<String, Object>> masterList =  masterDBDao.queryByCrtDt(tableName, startDate, endDate);
                 List<Map<String, Object>> slaveList = slaveDBDao.queryByCrtDt(tableName, startDate, endDate);
 
-                VerifyUtil.verifyResult(masterList, slaveList, tableName);
+                VerifyUtil.verifyResult(masterList, slaveList, tableName, log);
 
                 // 一次对比结果集后，startDate变为endDate，endDate再加 interval 天
                 startDate = endDate;
@@ -58,6 +66,7 @@ public class VerifyDBServiceImpl implements VerifyDBService {
                 endDate = VerifyUtil.sdf.format(c.getTime());
                 start = VerifyUtil.sdf.parse(startDate);
             }
+            MDC.clear();
         } catch (IOException | ParseException e ){
             e.printStackTrace();
         }
@@ -65,6 +74,10 @@ public class VerifyDBServiceImpl implements VerifyDBService {
 
     @Override
     public void queryById(String tableName, int pageSize) {
+        // slf4j，设置变量，在xml中使用这些定义日志的名称，可以选择将日志输出到哪。适用于多线程
+        MDC.put("logName",tableName);
+        Logger log = LoggerFactory.getLogger(tableName);
+
         // 如果表名过长，则直接停止查询，防止sql注入，这是因为表名是字符串拼接的，而不是占位符
         // 表名也不可以用占位符
         if (tableName.length() > 50){
@@ -76,10 +89,11 @@ public class VerifyDBServiceImpl implements VerifyDBService {
             List<Map<String, Object>> masterList = masterDBDao.queryById(tableName, page, pageSize);
             List<Map<String, Object>> slaveList = slaveDBDao.queryById(tableName, page, pageSize);
             if (masterList.size() == 0 || slaveList.size() == 0) {
+                MDC.clear();
                 return;
             }
             try {
-                VerifyUtil.verifyResult(masterList, slaveList, tableName);
+                VerifyUtil.verifyResult(masterList, slaveList, tableName, log);
             } catch (IOException e) {
                 e.printStackTrace();
             }

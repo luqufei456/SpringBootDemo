@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- 使用 MDC 的 appender -->
+    <appender name="FILE_CUSTOM" class="ch.qos.logback.classic.sift.SiftingAppender">
+        <!-- discriminator 的默认实现类 ch.qos.logback.classic.sift.MDCBasedDiscriminator -->
+        <discriminator>
+            <key>logName</key>
+            <defaultValue>MyFile</defaultValue>
+        </discriminator>
+        <sift>
+            <!-- 标准的文件输出 Appender, 文件名根据 MDC 动态生成  -->
+            <appender name="FILE-${logName}" class="ch.qos.logback.core.rolling.RollingFileAppender">
+                <file>logs/${logName}.log</file>
+                <!-- 最常用的滚动策略，它根据时间来制定滚动策略.既负责滚动也负责出发滚动 -->
+                <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                    <!--日志输出位置  可相对、和绝对路径 -->
+                    <fileNamePattern>logs/%d{yyyy-MM-dd}/${logName}.log</fileNamePattern>
+                </rollingPolicy>
+                <encoder charset="UTF-8">
+                    <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+                </encoder>
+            </appender>
+        </sift>
+    </appender>
+
+    <!-- root级别 INFO -->
+    <root level="INFO">
+        <!-- 文件输出 -->
+        <appender-ref ref="FILE_CUSTOM" />
+    </root>
+</configuration>

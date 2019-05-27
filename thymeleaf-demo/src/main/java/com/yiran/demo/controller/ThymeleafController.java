@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping
 public class ThymeleafController {
 
-    @GetMapping("/index")
+    /*@GetMapping("/index")
     public ModelAndView index(){
         ModelAndView view = new ModelAndView();
         // 设置跳转的视图 默认映射到 src/main/resources/templates/{viewName}.html
@@ -26,7 +26,7 @@ public class ThymeleafController {
         author.setEmail("1976967579@qq.com");
         view.addObject("author", author);
         return view;
-    }
+    }*/
 
     @GetMapping("/index1")
     public String index1(HttpServletRequest request){

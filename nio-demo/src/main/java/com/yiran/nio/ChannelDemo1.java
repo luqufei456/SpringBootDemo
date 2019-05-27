@@ -18,7 +18,7 @@ public class ChannelDemo1 {
             // 让文件有内容
             FileWriter fw = new FileWriter(file);
             BufferedWriter bw = new BufferedWriter(fw);
-            bw.write("测试，fileChannel的第一个demo");
+            bw.write("test , the channel first demo");
             bw.flush();
             bw.close();
         }
@@ -30,6 +30,7 @@ public class ChannelDemo1 {
         // 创建堆缓冲区，也可以创建直接(Direct)缓冲区，但是学了JVM之后你就会知道直接缓冲区的缺点，所以用堆缓冲区
         ByteBuffer buf = ByteBuffer.allocate(10);
         // 从该通道inChannel读入给定缓冲区的字节序列，也可以设置从哪里开始读，读多少什么的
+        // 简单来说就是把通道中的数据写到缓冲区中
         int bytesRead = inChannel.read(buf);
         while (bytesRead != -1) {
             // 这里
